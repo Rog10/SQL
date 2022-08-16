@@ -1,0 +1,108 @@
+drop table customer;
+create table Customer(
+CustomerID serial primary key,
+CustomerName varchar (255) not null,
+Address varchar (255) not null,
+City varchar (255),
+PostalCode int,
+Country varchar (255),
+Email varchar (255)
+);
+ 
+insert into customer (customername, address, city, postalcode, country, email) values 
+('Roger', '3051 Brighton 3rd','Brooklyn',11235, 'United States','Roger@gmail.com'),
+('Mauriceia', '3050 Brighton 5rd','Queens',11354, 'United States','Mauriceia@gmail.com'),
+('Alejandra', '3 Dekalb Avenue','Brooklyn',11235, 'United States','Alejandra@gmail.com'),
+('Fred', '8340 4th Avenue','Bronx',11205, 'United States','Fred@gmail.com');
+
+select * from customer;
+
+
+update customer set address = '2614 Avenue Y' where customerid = 1;
+
+
+delete from customer where customerid = 4;
+
+
+
+
+
+
+DROP TABLE IF EXISTS student;
+CREATE TABLE student
+(
+    id serial PRIMARY KEY,
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    email VARCHAR(255),
+    gender VARCHAR(255),
+    work_phone VARCHAR(55),
+    book_preference_hardcopy boolean 
+);
+
+
+copy student(first_name,last_name,email,gender,work_phone,book_preference_hardcopy)
+-- set the path for file location of student_data.csv
+from '/Applications/PostgreSQL 14/Student_data.csv'
+delimiter ',' CSV header;
+
+SELECT * FROM student;
+  
+DROP TABLE IF EXISTS student_marks;
+CREATE TABLE student_marks
+(
+    id serial PRIMARY KEY,
+    student_reg_id integer,
+    student_id integer,
+	unit2 integer,
+	unit3 integer,
+	unit4 integer,
+	unit5 integer    
+);
+
+copy student_marks(student_reg_id,student_id,unit2,unit3,unit4,unit5)
+--set the path for file location of student_marks.csv
+from '/Applications/PostgreSQL 14/student_marks.csv'
+delimiter ',' CSV header; 
+
+select * from student;
+select * from student_marks;
+
+ --students with the highest marks in Unit 4
+select student.first_name,student.last_name,student.id, student_marks.id, student_marks.unit4
+from student inner join student_marks on student.id = student_marks.id order by unit4;
+
+-- students scored between 89 and 100 unit4 
+select student.first_name,student.last_name,student.id, student_marks.id, student_marks.unit4
+from student inner join student_marks on student.id = student_marks.id where unit4 >= 89 or unit4 >=100
+order by unit4 asc;
+ 
+ 
+
+-- Take a closer look at the tables that you created and come up with 10 different scenarios/ questions and form SQL
+-- Ask your colleagues
+-- Get name, lastname, and email from students.
+select first_name, last_name, email from student;
+
+-- How many females from student? There are 475 females.
+select first_name, last_name, gender from student
+where gender = 'Female';
+-- How many males from student? There are 525 males.
+select first_name, last_name, gender from student
+where gender = 'Male';
+-- How many students has the letter R in their first name? 66
+select first_name, last_name from student where first_name like 'R%';
+-- How many male students has the letter R in their first name? 36
+select first_name, last_name from student where first_name like 'R%'
+and gender = 'Male';
+-- How many female students has the letter R in their first name? 30
+select first_name, last_name from student where first_name like 'R%'
+and gender = 'Female';
+--how many workphones begin with (347)? 4 
+select last_name, work_phone from student where work_phone like '347%';
+-- Find individual average of the students.
+select student_id, avg(unit2+unit3+unit4+unit5)/4 as Average from student_marks
+group by student_id;
+-- Find the average of all students.
+select avg(unit2+unit3+unit4+unit5)/4 as Average from student_marks
+;
